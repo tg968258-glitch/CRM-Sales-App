@@ -13,10 +13,10 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Notification" ,indexes = {
-@Index(
-        name = "idx_notification_user_status",
-        columnList = "user_id, status"
-)
+        @Index(
+                name = "idx_notification_user_status",
+                columnList = "user_id, notification_status"
+        )
     })
 @Getter
 @Setter
@@ -40,7 +40,7 @@ public class Notification {
     private String message;
 
     @Enumerated(EnumType.STRING)
-    @Column(name="NotificationStatus",nullable = false)
+    @Column(name = "notification_status", nullable = false)
     private NotificationStatus status;
 
     @Column(name = "created at", nullable=false,updatable = false)

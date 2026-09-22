@@ -60,7 +60,8 @@ create table deal (
                       expected_close_date timestamp(6),
                       updated_at timestamp(6),
                       "Closing Note" varchar(255),
-                      deal_status varchar(255) default open not null check ((deal_status in ('open','won','lost'))),
+                      deal_status varchar(255) default 'open' not null
+                          check ((deal_status in ('open','won','lost'))),
                       title varchar(255) not null,
                       primary key (deal_id)
 );
@@ -95,8 +96,8 @@ create table leads (
                        notes varchar(255),
                        phone_number varchar(255),
                        salutation varchar(255) check ((salutation in ('Mr','Ms','Mrs','Dr','Prof'))),
-                       source varchar(255) default Website check ((source in ('Website','Referral','Social_Media','Campaign'))),
-                       status varchar(255) default New not null check ((status in ('New','Qualified','Contacted','Unqualified','Converted'))),
+                       source varchar(255) default 'Website' check ((source in ('Website','Referral','Social_Media','Campaign'))),
+                       status varchar(255) default 'New' not null check ((status in ('New','Qualified','Contacted','Unqualified','Converted'))),
                        primary key (lead_id)
 );
 
@@ -173,7 +174,7 @@ create index idx_lead_source
     on leads (source);
 
 create index idx_notification_user_status
-    on notification (user_id, status);
+    on notification (user_id, notification_status);
 
 alter table if exists accounts
     add constraint FK8s5gjic37b79muigna09ty4od
