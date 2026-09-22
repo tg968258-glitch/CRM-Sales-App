@@ -1,6 +1,5 @@
 package com.crm.sales_pipeline.entity;
 
-import com.crm.sales_pipeline.enums.UserRole;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -17,7 +16,7 @@ public class User {
 
     @Id
     @Column(name = "uid", length = 10)
-    private String uid;
+    private Long uid;
 
     @Column(name = "name", nullable=false)
     private String name;
@@ -28,10 +27,6 @@ public class User {
     @Column(name="password_hash", nullable=false)
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
-    private UserRole role;
-
     @ColumnDefault("true")
     @Column(name = "is_active", nullable = false)
     private boolean isActive;
@@ -41,5 +36,9 @@ public class User {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
 
 }
