@@ -15,7 +15,10 @@ import java.time.LocalDateTime;
 @Table(name = "Contact",
         indexes = {
                 @Index(name = "idx_contact_account", columnList = "account_id"),
-                @Index(name = "idx_contact_owner", columnList = "owner_id")})
+                @Index(
+                        name = "idx_contact_owner",
+                        columnList = "contact_owner_id")
+                        })
 @Getter
 @Setter
 @NoArgsConstructor
