@@ -3,6 +3,7 @@ package com.crm.sales_pipeline.entity;
 import com.crm.sales_pipeline.enums.Industry;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Index;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,12 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Accounts")
+@Table(name = "Accounts",
+        indexes = {
+                @Index(name = "idx_account_owner", columnList = "owner_id"),
+                @Index(name = "idx_account_name", columnList = "account_name"),
+                @Index(name = "idx_account_industry", columnList = "industry")
+        })
 @Getter
 @Setter
 @NoArgsConstructor

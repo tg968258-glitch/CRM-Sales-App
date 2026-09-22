@@ -6,6 +6,7 @@ import com.crm.sales_pipeline.enums.LeadSource;
 import com.crm.sales_pipeline.enums.LeadRating;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Index;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,12 @@ import org.hibernate.annotations.ColumnDefault;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "Leads")
+@Table(name = "Leads",  indexes = {
+        @Index(name = "idx_lead_owner", columnList = "owner_id"),
+        @Index(name = "idx_lead_email", columnList = "email"),
+        @Index(name = "idx_lead_status", columnList = "status"),
+        @Index(name = "idx_lead_source", columnList = "source")
+})
 @Getter
 @Setter
 @NoArgsConstructor

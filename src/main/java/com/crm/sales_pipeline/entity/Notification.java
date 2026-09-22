@@ -3,6 +3,7 @@ package com.crm.sales_pipeline.entity;
 import com.crm.sales_pipeline.enums.NotificationStatus;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Index;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,12 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Notification")
+@Table(name = "Notification" ,indexes = {
+@Index(
+        name = "idx_notification_user_status",
+        columnList = "user_id, status"
+)
+    })
 @Getter
 @Setter
 @NoArgsConstructor
