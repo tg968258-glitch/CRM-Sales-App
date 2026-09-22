@@ -31,7 +31,7 @@ public class Activities {
     @Column(name = "Subject", nullable=false)
     private String subject;
 
-    @Column(name = "Staus", nullable=false)
+    @Column(name = "Status", nullable=false)
     private String status;
 
     @Column(name = "due_at")
@@ -44,11 +44,11 @@ public class Activities {
     private LocalDateTime createdAt;
 
     @ManyToOne
-    @JoinColumn(name = "deal_id", referencedColumnName = "deal_id", nullable = false)
+    @JoinColumn(name = "deal_id", referencedColumnName = "deal_id")
     private Deal deal;
 
     @ManyToOne
-    @JoinColumn(name = "lead_id", referencedColumnName = "lead_id", nullable = false)
+    @JoinColumn(name = "lead_id", referencedColumnName = "lead_id")
     private Lead lead;
 
     @ManyToOne

@@ -27,7 +27,7 @@ public class Contact {
     @Column(name = "name", nullable=false)
     private String name;
 
-    @Column(name = "email", length = 255, nullable=false)
+    @Column(name = "email", length = 255, nullable=false,unique = true)
     private String email;
 
     @Enumerated(EnumType.STRING)

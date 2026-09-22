@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
 
@@ -34,11 +35,12 @@ private Salutation  salutation;
 @Column(name = "name", nullable=false)
 private String name;
 
+@ColumnDefault("New")
 @Enumerated(EnumType.STRING)
 @Column(name="status",nullable = false)
 private LeadStatus status;
 
-@Column(name = "email", length = 255, nullable=false)
+@Column(name = "email", length = 255, nullable=false,unique = true)
 private String email;
 
 @Column(name = "phone_number")
@@ -47,6 +49,7 @@ private String phone;
 @Column(name = "company_name")
 private String company_name;
 
+@ColumnDefault("Website")
 @Enumerated(EnumType.STRING)
 @Column(name = "source")
 private LeadSource source;

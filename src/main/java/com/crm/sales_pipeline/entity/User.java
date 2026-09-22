@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 
 @Entity
@@ -21,7 +22,7 @@ public class User {
     @Column(name = "name", nullable=false)
     private String name;
 
-    @Column(name = "email", length = 255, nullable=false)
+    @Column(name = "email", length = 255, nullable=false,unique = true)
     private String email;
 
     @Column(name="password_hash", nullable=false)
@@ -31,10 +32,11 @@ public class User {
     @Column(name = "role", nullable = false)
     private UserRole role;
 
+    @ColumnDefault("true")
     @Column(name = "is_active", nullable = false)
     private boolean isActive;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at",nullable=false, updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")

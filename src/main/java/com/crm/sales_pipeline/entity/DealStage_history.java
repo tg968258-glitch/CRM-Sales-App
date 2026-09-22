@@ -18,8 +18,8 @@ import java.time.LocalDateTime;
 public class DealStage_history {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "deal_id")
-    private int dealId;
+    @Column(name = "history_id")
+    private int historyId;
 
     @Column(name = "from_stage", nullable=false)
     private String from_stage;
@@ -33,4 +33,8 @@ public class DealStage_history {
     @ManyToOne
     @JoinColumn(name = "Changed_By", referencedColumnName = "uid", nullable = false)
     private User owner;
+
+    @ManyToOne
+    @JoinColumn(name = "deal_id", referencedColumnName = "deal_id", nullable = false)
+    private Deal deal;
 }

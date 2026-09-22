@@ -1,11 +1,7 @@
 package com.crm.sales_pipeline.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,8 +18,9 @@ public class audit_logs {
     @Column(name = "audit_id")
     private Integer auditId;
 
-    @Column(name = "uid", length = 10, nullable = false)
-    private String uid;
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "uid", nullable = false)
+    private User user;
 
     @Column(name = "action", length = 50, nullable = false)
     private String action;
