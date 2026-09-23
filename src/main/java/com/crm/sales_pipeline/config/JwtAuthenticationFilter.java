@@ -1,4 +1,4 @@
-package com.crm.sales_pipeline.security;
+package com.crm.sales_pipeline.config;
 
 public class JwtAuthenticationFilter {
 }
