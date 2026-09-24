@@ -1,5 +1,6 @@
 package com.crm.sales_pipeline.config;
 
+import com.crm.sales_pipeline.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,9 +10,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -19,6 +18,11 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 
 public class SecurityConfig {
+    private final UserDetailsServiceImpl userDetailsService;
+
+    public SecurityConfig(UserDetailsServiceImpl userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http){
         return http
@@ -30,31 +34,21 @@ public class SecurityConfig {
                 .build();
     }
 
-
-    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter();
-    }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration authConfig) throws Exception {
-
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig)
+            throws Exception {
         return authConfig.getAuthenticationManager();
     }
     @Bean
     public AuthenticationProvider authenticationProvider() {
-
         DaoAuthenticationProvider provider =
                 new DaoAuthenticationProvider(userDetailsService);
-
         provider.setPasswordEncoder(passwordEncoder());
-
         return provider;
     }
 
