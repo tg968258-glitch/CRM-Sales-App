@@ -34,8 +34,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http){
         return http
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(request ->
-                        request.anyRequest().authenticated())
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers("/api/auth/login").permitAll()
+                        .anyRequest().authenticated()
+                )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(
