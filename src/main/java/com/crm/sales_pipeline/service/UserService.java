@@ -23,6 +23,15 @@ public List<UserResponse> getAllUsers(){
             .toList();
 }
 
+    public UserResponse getUserById(Long uid) {
+
+        User user = userRepository.findById(uid)
+                .orElseThrow(() ->
+                        new RuntimeException("User not found"));
+
+        return mapToResponse(user);
+    }
+
 private UserResponse mapToResponse (User user){
     return new UserResponse(
             user.getUid(),

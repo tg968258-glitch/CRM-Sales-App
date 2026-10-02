@@ -7,8 +7,8 @@ import lombok.Data;
 @AllArgsConstructor
 public class UserResponse {
     private Long uid;
+    private String name;
     private String email;
-    private String password;
     private boolean isActive;
 
 }
