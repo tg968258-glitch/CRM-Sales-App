@@ -33,7 +33,6 @@ HELP.md
 # Environment
 **/.env
 **/.env.*
-backend/src/main/resources/application.properties
 
 # Logs
 *.log
