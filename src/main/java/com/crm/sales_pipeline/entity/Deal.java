@@ -11,7 +11,7 @@ import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
+
 
 @Entity
 @Table(name = "Deal")
@@ -37,7 +37,7 @@ public class Deal {
 
 
     @Column(name = "expected_close_date")
-    private Date close_date;
+    private LocalDateTime close_date;
 
 
     @Column(name = "Value")

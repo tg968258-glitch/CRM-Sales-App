@@ -29,7 +29,6 @@ public class JWTTokenProvider {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
         Date now = new Date();
-
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .issuedAt(now)

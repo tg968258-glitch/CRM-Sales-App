@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.Date;
+
 
 @Entity
 @Table(name = "Activity")
@@ -22,7 +22,7 @@ public class Activities {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int Id;
+    private int id;
 
     @Enumerated(EnumType.STRING)
     @Column(name="ActivityType",nullable = false)
@@ -35,10 +35,10 @@ public class Activities {
     private String status;
 
     @Column(name = "due_at")
-    private Date dueAt;
+    private LocalDateTime dueAt;
 
     @Column(name = "completed_at")
-    private Date completedAt;
+    private LocalDateTime completedAt;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

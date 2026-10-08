@@ -3,12 +3,15 @@ package com.crm.sales_pipeline.dto;
 import com.crm.sales_pipeline.enums.DealStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
+@AllArgsConstructor
 public class DealDto {
 
     private Integer dealId;
@@ -25,7 +28,7 @@ public class DealDto {
 
     private LocalDateTime expectedCloseDate;
     private DealStatus dealStatus;
+    @Size(max = 1000, message = "Closing note cannot exceed 1000 characters")
     private String closingNote;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+
 }
