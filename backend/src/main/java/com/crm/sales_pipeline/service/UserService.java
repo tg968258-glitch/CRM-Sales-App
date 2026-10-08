@@ -123,7 +123,9 @@ public List<UserResponse> getAllUsers(){
             user.getUid(),
             user.getName(),
             user.getEmail(),
+            user.getRole().getRoleName().name(),
             user.isActive()
+
     );
 }
 }

@@ -1,38 +1,31 @@
+
 import type { Metadata } from "next";
-import Topbar from "@/components/TopBar";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist } from "next/font/google";
+import AppLayout from "@/components/AppLayout";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const geist = Geist({
+    subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "CRM Sales",
-  description: "Sales Application",
+    title: "CRM Sales",
+    description: "Sales Management Application",
+    icons: {
+        icon: "/icon.svg",
+    },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
-  return (
-  <html
-    lang="en"
-    className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-  >
-    <body>
-      <div className="min-h-screen bg-gray-50">
-        <Topbar />
-
-        <main className="p-6">
-          {children}
-        </main>
-      </div>
-    </body>
-  </html>
-);
+export default function RootLayout({
+                                       children,
+                                   }: Readonly<{
+    children: React.ReactNode;
+}>) {
+    return (
+        <html lang="en">
+        <body className={geist.className}>
+        <AppLayout>{children}</AppLayout>
+        </body>
+        </html>
+    );
 }

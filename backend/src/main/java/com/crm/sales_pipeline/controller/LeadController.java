@@ -17,33 +17,45 @@ import java.util.List;
 @PreAuthorize("hasAnyRole('ADMIN', 'SALES_MANAGER', 'SALES_EXECUTIVE')")
 public class LeadController {
     private final LeadService leadService;
+
     public LeadController(LeadService leadService) {
         this.leadService = leadService;
     }
+
     @GetMapping
     public Page<LeadDto> getAllLeads(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return leadService.getAllLeads(page, size);
     }
+
     @GetMapping("/{id}")
-    public LeadDto getLeadById(@PathVariable Integer id) {
-        return leadService.getLeadById(id);
+    public LeadDto getLeadById(@PathVariable("id") Integer leadId) {
+        return leadService.getLeadById(leadId);
     }
+
     @PostMapping
-    public LeadDto createLead(@RequestBody LeadDto dto) {
+    public LeadDto createLead(@Valid @RequestBody LeadDto dto) {
         return leadService.createLead(dto);
     }
+
     @PutMapping("/{id}")
-    public LeadDto updateLead(@PathVariable Integer id, @RequestBody LeadDto dto)
-    {return leadService.updateLead(id, dto);}
-    @PutMapping("/{lead_id}/convert")
+    public LeadDto updateLead(
+            @PathVariable("id") Integer leadId,
+            @RequestBody LeadDto dto) {
+        return leadService.updateLead(leadId, dto);
+    }
+
+    @PutMapping("/{leadId}/convert")
     public ResponseEntity<LeadDto> convertLead(
-            @PathVariable Integer leadId,
+            @PathVariable("leadId") Integer leadId,
             @Valid @RequestBody LeadConversionDto dto) {
-        return ResponseEntity.ok(
-                leadService.convertLead(leadId, dto)
-        );}
-    @DeleteMapping("/{id}") @PreAuthorize("hasAnyRole('ADMIN', 'SALES_MANAGER')")
-    public void deleteLead(@PathVariable Integer id) {leadService.deleteLead(id);}
+        return ResponseEntity.ok(leadService.convertLead(leadId, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SALES_MANAGER')")
+    public void deleteLead(@PathVariable("id") Integer leadId) {
+        leadService.deleteLead(leadId);
+    }
 }

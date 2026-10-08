@@ -9,6 +9,7 @@ public class UserResponse {
     private Long uid;
     private String name;
     private String email;
+    private String roleName;
     private boolean isActive;
 
 }

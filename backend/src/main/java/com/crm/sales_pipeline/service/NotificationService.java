@@ -4,11 +4,13 @@ import com.crm.sales_pipeline.Exception.ResourceNotFoundException;
 import com.crm.sales_pipeline.dto.NotificationDto;
 import com.crm.sales_pipeline.entity.Notification;
 import com.crm.sales_pipeline.entity.User;
+import com.crm.sales_pipeline.enums.NotificationStatus;
 import com.crm.sales_pipeline.repository.NotificationRepository;
 import com.crm.sales_pipeline.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -33,7 +35,28 @@ public class NotificationService {
         return mapToResponse(notification);
     }
     public List<Notification> getMyNotifications(String email) {
-        return notificationRepository.findByUser_Email(email);
+        return notificationRepository.findByUser_Email(email)
+                .stream()
+                .sorted(Comparator.comparing(
+                        Notification::getCreated_at,
+                        Comparator.nullsLast(Comparator.reverseOrder())
+                ))
+                .toList();
+    }
+    public NotificationDto markAsRead(Integer id, String email) {
+        Notification notification = notificationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
+
+        if (!notification.getUser().getEmail().equalsIgnoreCase(email)) {
+            throw new ResourceNotFoundException("Notification not found");
+        }
+
+        if (notification.getStatus() == NotificationStatus.Unread) {
+            notification.setStatus(NotificationStatus.Read);
+            notification = notificationRepository.save(notification);
+        }
+
+        return mapToResponse(notification);
     }
     public NotificationDto createNotification(NotificationDto dto) {
         User user = userRepository.findById(dto.getUserId())

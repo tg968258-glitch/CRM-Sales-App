@@ -36,6 +36,14 @@ public class NotificationController {
                 notificationService.getMyNotifications(authentication.getName())
         );
     }
+    @PutMapping("/{id}/read")
+    public ResponseEntity<NotificationDto> markAsRead(
+            @PathVariable Integer id,
+            Authentication authentication) {
+        return ResponseEntity.ok(
+                notificationService.markAsRead(id, authentication.getName())
+        );
+    }
     @PostMapping  @PreAuthorize("hasAnyRole('ADMIN', 'SALES_MANAGER')")
     public NotificationDto createNotification(@RequestBody NotificationDto dto) {
         return notificationService.createNotification(dto);
