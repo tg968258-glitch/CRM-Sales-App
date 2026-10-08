@@ -21,12 +21,15 @@ public class ContactService {
     private final ContactRepository contactRepository;
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
+    private final RecordAccessService recordAccessService;
     public ContactService(ContactRepository contactRepository,
                           AccountRepository accountRepository,
-                          UserRepository userRepository) {
+                          UserRepository userRepository,
+                          RecordAccessService recordAccessService) {
         this.contactRepository = contactRepository;
         this.accountRepository = accountRepository;
         this.userRepository = userRepository;
+        this.recordAccessService = recordAccessService;
     }
     public ContactDto getContactById(Integer contactId) {
         Contact contact = findContactById(contactId);
@@ -35,7 +38,10 @@ public class ContactService {
     public Page<ContactDto> getAllContacts(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("contactId").descending()
         );
-        return contactRepository.findAll(pageable)
+        Page<Contact> contacts = recordAccessService.isSalesExecutive()
+                ? contactRepository.findAllByOwner_Email(recordAccessService.currentEmail(), pageable)
+                : contactRepository.findAll(pageable);
+        return contacts
                 .map(this::mapToResponse);
     }
 
@@ -43,10 +49,9 @@ public class ContactService {
         Account account = accountRepository.findById(dto.getAccountId())
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Account not found"));
+        recordAccessService.requireAccess(account.getOwner(), "Account");
 
-        User owner = userRepository.findById(dto.getContactOwnerId())
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Owner not found"));
+        User owner = recordAccessService.resolveOwner(dto.getContactOwnerId());
 
         Contact contact = new Contact();
         contact.setAccount(account);
@@ -86,9 +91,11 @@ public class ContactService {
         contactRepository.delete(contact);
     }
     private Contact findContactById(Integer id) {
-        return contactRepository.findById(id)
+        Contact contact = contactRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Contact not found"));
+        recordAccessService.requireAccess(contact.getOwner(), "Contact");
+        return contact;
     }
     private ContactDto mapToResponse(Contact contact) {
         return new ContactDto(

@@ -16,16 +16,22 @@ import org.springframework.stereotype.Service;
 public class AccountService {
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
+    private final RecordAccessService recordAccessService;
 
     public AccountService(AccountRepository accountRepository,
-                          UserRepository userRepository) {
+                          UserRepository userRepository,
+                          RecordAccessService recordAccessService) {
         this.accountRepository = accountRepository;
         this.userRepository = userRepository;
+        this.recordAccessService = recordAccessService;
     }
     public Page<AccountDto> getAllAccounts(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("accId").descending()
         );
-        return accountRepository.findAll(pageable)
+        Page<Account> accounts = recordAccessService.isSalesExecutive()
+                ? accountRepository.findAllByOwner_Email(recordAccessService.currentEmail(), pageable)
+                : accountRepository.findAll(pageable);
+        return accounts
                 .map(this::mapToResponse);
     }
     public AccountDto getAccountById(Integer accountId) {
@@ -34,9 +40,7 @@ public class AccountService {
     }
 
     public AccountDto createAccount(AccountDto dto) {
-        User owner = userRepository.findById(dto.getAccOwnerId())
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Owner not found"));
+        User owner = recordAccessService.resolveOwner(dto.getAccOwnerId());
         Account account = new Account();
         account.setOwner(owner);
         account.setName(dto.getAccountName());
@@ -71,9 +75,11 @@ public class AccountService {
     }
 
     private Account findAccountById(Integer id) {
-        return accountRepository.findById(id)
+        Account account = accountRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Account not found"));
+        recordAccessService.requireAccess(account.getOwner(), "Account");
+        return account;
     }
     private AccountDto mapToResponse(Account account) {
         return new AccountDto(

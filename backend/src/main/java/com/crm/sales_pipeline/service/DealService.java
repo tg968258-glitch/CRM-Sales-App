@@ -22,25 +22,31 @@ public class DealService {
     private final DealStageRepository dealStageRepository;
     private final UserRepository userRepository;
     private final DealStageHistoryRepository dealStageHistoryRepository;
+    private final RecordAccessService recordAccessService;
 
     public DealService(DealRepository dealRepository,
                        AccountRepository accountRepository,
                        ContactRepository contactRepository,
                        DealStageRepository dealStageRepository,
                        UserRepository userRepository,
-                       DealStageHistoryRepository dealStageHistoryRepository) {
+                       DealStageHistoryRepository dealStageHistoryRepository,
+                       RecordAccessService recordAccessService) {
         this.dealRepository = dealRepository;
         this.accountRepository = accountRepository;
         this.contactRepository = contactRepository;
         this.dealStageRepository = dealStageRepository;
         this.userRepository = userRepository;
         this.dealStageHistoryRepository = dealStageHistoryRepository;
+        this.recordAccessService = recordAccessService;
 
     }
     public Page<DealDto> getAllDeals(int page, int size) {
         Pageable pageable = PageRequest.of(page,size, Sort.by("dealId").descending()
         );
-        return dealRepository.findAll(pageable)
+        Page<Deal> deals = recordAccessService.isSalesExecutive()
+                ? dealRepository.findAllByOwner_Email(recordAccessService.currentEmail(), pageable)
+                : dealRepository.findAll(pageable);
+        return deals
                 .map(this::mapToResponse);
     }
     public DealDto getDealById(Integer dealId) {
@@ -52,10 +58,12 @@ public class DealService {
         Account account = accountRepository.findById(dto.getAccountId())
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Account not found"));
+        recordAccessService.requireAccess(account.getOwner(), "Account");
 
         Contact contact = contactRepository.findById(dto.getContactId())
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Contact not found"));
+        recordAccessService.requireAccess(contact.getOwner(), "Contact");
         if (contact.getAccount().getAccId() != account.getAccId()) {
             throw new IllegalArgumentException(
                     "Contact does not belong to the selected account");}
@@ -64,9 +72,7 @@ public class DealService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Deal stage not found"));
 
-        User owner = userRepository.findById(dto.getDealOwnerId())
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Owner not found"));
+        User owner = recordAccessService.resolveOwner(dto.getDealOwnerId());
 
         Deal deal = new Deal();
         deal.setTitle(dto.getTitle());
@@ -123,19 +129,18 @@ public class DealService {
     }
 
     private Deal findDealById(Integer id) {
-        return dealRepository.findById(id)
+        Deal deal = dealRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Deal not found"));
+        recordAccessService.requireAccess(deal.getOwner(), "Deal");
+        return deal;
     }
     public void deleteDeal(Integer id) {
-        Deal deal = dealRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Deal not found"));
+        Deal deal = findDealById(id);
         dealRepository.delete(deal);
     }
     public List<DealStage_history> getDealHistory(Integer dealId) {
-        if (!dealRepository.existsById(dealId)) {
-            throw new ResourceNotFoundException("Deal not found");
-        }
+        findDealById(dealId);
         return dealStageHistoryRepository
                 .findByDeal_DealIdOrderByChangedAtDesc(dealId);
     }

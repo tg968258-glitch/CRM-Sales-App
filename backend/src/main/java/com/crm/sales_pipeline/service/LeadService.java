@@ -22,24 +22,30 @@ public class LeadService {
     private final ContactRepository contactRepository;
             private final DealRepository dealRepository;
                     private final DealStageRepository dealStageRepository;
+    private final RecordAccessService recordAccessService;
 
     public LeadService(LeadRepository leadRepository,
                        UserRepository userRepository,
                        AccountRepository accountRepository,
                        ContactRepository contactRepository,
                        DealRepository dealRepository,
-                       DealStageRepository dealStageRepository) {
+                       DealStageRepository dealStageRepository,
+                       RecordAccessService recordAccessService) {
         this.leadRepository = leadRepository;
         this.userRepository = userRepository;
         this.accountRepository = accountRepository;
         this.contactRepository = contactRepository;
         this.dealRepository = dealRepository;
         this.dealStageRepository = dealStageRepository;
+        this.recordAccessService = recordAccessService;
     }
 
     public Page<LeadDto> getAllLeads(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("leadId").descending());
-        return leadRepository.findAll(pageable)
+        Page<Lead> leads = recordAccessService.isSalesExecutive()
+                ? leadRepository.findAllByOwner_Email(recordAccessService.currentEmail(), pageable)
+                : leadRepository.findAll(pageable);
+        return leads
                 .map(this::mapToResponse);
     }
     public LeadDto getLeadById(Integer leadId) {
@@ -47,9 +53,7 @@ public class LeadService {
         return mapToResponse(lead);
     }
         public LeadDto createLead (LeadDto dto){
-            User owner = userRepository.findById(dto.getOwnerId())
-                    .orElseThrow(() ->
-                            new ResourceNotFoundException("Owner not found"));
+            User owner = recordAccessService.resolveOwner(dto.getOwnerId());
             Lead lead = new Lead();
 
             lead.setOwner(owner);
@@ -152,8 +156,10 @@ public class LeadService {
     }
 
     private Lead findLeadById(Integer id) {
-        return leadRepository.findById(id)
+        Lead lead = leadRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Lead not found"));
+        recordAccessService.requireAccess(lead.getOwner(), "Lead");
+        return lead;
     }
         private LeadDto mapToResponse (Lead lead){
         return new LeadDto(

@@ -8,10 +8,15 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Repository
 public interface DealRepository extends JpaRepository<Deal, Integer> {
     long countByStatus(DealStatus status);
+    Page<Deal> findAllByOwner_Email(String email, Pageable pageable);
+    long countByOwner_Email(String email);
+    long countByStatusAndOwner_Email(DealStatus status, String email);
     @Query("SELECT d.status, COUNT(d) FROM Deal d GROUP BY d.status")
     List<Object[]> countDealsByStatus();
     @Query("SELECT d.status, SUM(d.value) FROM Deal d GROUP BY d.status")

@@ -15,16 +15,31 @@ public class DashboardService {
     private final LeadRepository leadRepository;
     private final DealRepository dealRepository;
     private final ActivityRepository activityRepository;
+    private final RecordAccessService recordAccessService;
 
     public DashboardService(
             LeadRepository leadRepository,
             DealRepository dealRepository,
-            ActivityRepository activityRepository) {
+            ActivityRepository activityRepository,
+            RecordAccessService recordAccessService) {
         this.leadRepository = leadRepository;
         this.dealRepository = dealRepository;
         this.activityRepository = activityRepository;
+        this.recordAccessService = recordAccessService;
     }
     public DashboardDto getDashboard() {
+        if (recordAccessService.isSalesExecutive()) {
+            String email = recordAccessService.currentEmail();
+            return new DashboardDto(
+                    leadRepository.countByOwner_Email(email),
+                    leadRepository.countByStatusAndOwner_Email(LeadStatus.Qualified, email),
+                    dealRepository.countByOwner_Email(email),
+                    dealRepository.countByStatusAndOwner_Email(DealStatus.open, email),
+                    dealRepository.countByStatusAndOwner_Email(DealStatus.won, email),
+                    dealRepository.countByStatusAndOwner_Email(DealStatus.lost, email),
+                    activityRepository.countByUser_EmailAndDueAtBeforeAndCompletedAtIsNull(email, LocalDateTime.now())
+            );
+        }
         long totalLeads = leadRepository.count();
         long qualifiedLeads = leadRepository.countByStatus(LeadStatus.Qualified);
         long totalDeals = dealRepository.count();

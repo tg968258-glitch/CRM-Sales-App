@@ -26,20 +26,26 @@ public class ActivityService {
     private final DealRepository dealRepository;
     private final LeadRepository leadRepository;
     private final UserRepository userRepository;
+    private final RecordAccessService recordAccessService;
 
     public ActivityService(ActivityRepository activityRepository,
                            DealRepository dealRepository,
                            LeadRepository leadRepository,
-                           UserRepository userRepository) {
+                           UserRepository userRepository,
+                           RecordAccessService recordAccessService) {
         this.activityRepository = activityRepository;
         this.dealRepository = dealRepository;
         this.leadRepository = leadRepository;
         this.userRepository = userRepository;
+        this.recordAccessService = recordAccessService;
     }
     public Page<ActivityDto> getAllActivities(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending()
         );
-        return activityRepository.findAll(pageable)
+        Page<Activities> activities = recordAccessService.isSalesExecutive()
+                ? activityRepository.findAllByUser_Email(recordAccessService.currentEmail(), pageable)
+                : activityRepository.findAll(pageable);
+        return activities
                 .map(this::mapToResponse);
     }
     public ActivityDto getActivityById(Integer activityId) {
@@ -58,12 +64,14 @@ public class ActivityService {
         if (dto.getDealId() != null) {
             Deal deal = dealRepository.findById(dto.getDealId())
                     .orElseThrow(() -> new RuntimeException("Deal not found"));
+            recordAccessService.requireAccess(deal.getOwner(), "Deal");
             activity.setDeal(deal);
 }
         if (dto.getLeadId() != null) {
             Lead lead = leadRepository.findById(dto.getLeadId())
                     .orElseThrow(() ->
                             new ResourceNotFoundException("Lead not found"));
+            recordAccessService.requireAccess(lead.getOwner(), "Lead");
             activity.setLead(lead);
         }
         activity.setType(dto.getActivityType());
@@ -104,9 +112,11 @@ public class ActivityService {
     }
 
     private Activities findActivityById(Integer id) {
-        return activityRepository.findById(id)
+        Activities activity = activityRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Activity not found"));
+        recordAccessService.requireAccess(activity.getUser(), "Activity");
+        return activity;
     }
     private ActivityDto mapToResponse(Activities activity) {
         return new ActivityDto(
