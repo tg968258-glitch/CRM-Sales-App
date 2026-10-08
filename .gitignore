@@ -1,15 +1,39 @@
-# Environment
-.env
-**/.env
-**/.env.local
-
-# Spring Boot configuration
-backend/src/main/resources/application.properties
-
-# Backend build
+# Spring Boot
+HELP.md
 **/target/
+**/build/
 
-# Frontend
+# Maven
+**/.mvn/wrapper/maven-wrapper.jar
+
+# IntelliJ
+**/.idea/
+*.iml
+*.iws
+*.ipr
+
+# STS
+.apt_generated/
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache/
+
+# VS Code
+**/.vscode/
+
+# Frontend - Next.js
 **/node_modules/
 **/.next/
 **/out/
+**/.turbo/
+
+# Environment
+**/.env
+**/.env.*
+backend/src/main/resources/application.properties
+
+# Logs
+*.log
