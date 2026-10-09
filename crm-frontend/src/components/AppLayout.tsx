@@ -24,7 +24,7 @@ export default function AppLayout({
                 if (!session.authenticated) router.replace("/login");
             })
             .finally(() => active && setChecking(false));
-        const expire = () => router.replace("/login?expired=1");
+        const expire = () => router.replace("/login");
         window.addEventListener("crm:unauthorized", expire);
         return () => { active = false; window.removeEventListener("crm:unauthorized", expire); };
     }, [isLoginPage, router]);

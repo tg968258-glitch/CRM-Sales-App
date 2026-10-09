@@ -1,23 +1,17 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, LoaderCircle } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, LoaderCircle } from "lucide-react";
 
 export default function LoginPage() {
     const router = useRouter();
-    const [expired, setExpired] = useState(false);
-
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        const timer = window.setTimeout(() => setExpired(new URLSearchParams(window.location.search).has("expired")), 0);
-        return () => window.clearTimeout(timer);
-    }, []);
 
     async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -63,12 +57,6 @@ export default function LoginPage() {
                         </p>
                     </div>
 
-                    {expired && (
-                        <p className="mb-5 rounded-md border border-amber-200 bg-amber-50 px-3.5 py-3 text-sm text-amber-800">
-                            Your session ended. Please sign in again.
-                        </p>
-                    )}
-
                     <form onSubmit={handleLogin} autoComplete="off" className="space-y-5">
                         <div>
                             <label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-700">
@@ -91,17 +79,28 @@ export default function LoginPage() {
                             <label htmlFor="password" className="mb-2 block text-sm font-medium text-slate-700">
                                 Password
                             </label>
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                autoComplete="new-password"
-                                value={password}
-                                onChange={(event) => setPassword(event.target.value)}
-                                placeholder="Enter your password"
-                                required
-                                className="w-full rounded-md border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                            />
+                            <div className="relative">
+                                <input
+                                    id="password"
+                                    name="password"
+                                    type={showPassword ? "text" : "password"}
+                                    autoComplete="current-password"
+                                    value={password}
+                                    onChange={(event) => setPassword(event.target.value)}
+                                    placeholder="Enter your password"
+                                    required
+                                    className="w-full rounded-md border border-slate-300 bg-white py-2.5 pl-3.5 pr-11 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword((visible) => !visible)}
+                                    aria-label={showPassword ? "Hide password" : "Show password"}
+                                    aria-pressed={showPassword}
+                                    className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-r-md text-slate-500 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500"
+                                >
+                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </button>
+                            </div>
                         </div>
 
                         {error && (
