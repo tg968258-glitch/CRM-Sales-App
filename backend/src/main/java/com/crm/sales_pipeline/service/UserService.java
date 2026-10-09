@@ -112,9 +112,6 @@ public List<UserResponse> getAllUsers(){
             throw new ResourceNotFoundException("User not found");}
     if (request.getName() != null) {
             user.setName(request.getName());}
-    if (request.getEmail() != null) {
-            user.setEmail(request.getEmail());}
-
         User updatedUser = userRepository.save(user);
     return mapToResponse(updatedUser);}
 
