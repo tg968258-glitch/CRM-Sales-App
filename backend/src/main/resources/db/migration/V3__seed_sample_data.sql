@@ -1,6 +1,4 @@
--- Realistic CRM sample data following the application's lead conversion flow.
--- User-owned records are inserted only when an existing active user is available.
--- This migration never creates or modifies users, roles, or authentication data.
+
 
 INSERT INTO deal_stage (stage, probability, display_order, is_active)
 SELECT seed.stage, seed.probability, seed.display_order, true
